@@ -1,0 +1,170 @@
+body{
+    background-color: whitesmoke;
+    font-family: sans-serif; 
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+.login-page{
+    height: 100%;
+    width: 100%;
+    background-position: center;
+    background-size: cover;
+    position: absolute;
+}
+
+.login-form{
+    width: 380px;
+    height: 480px;
+    position: relative;
+    margin: 6% auto;
+    padding: 5px;
+    overflow: hidden;
+    background:rgba( 255, 255, 255, 0.25 );
+    box-shadow:0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter:blur( 4px );
+    -webkit-backdrop-filter:blur( 4px );
+    border-radius:10px;
+    border:1px solid rgba( 255, 255, 255, 0.18 );
+}
+
+.login-form:hover{
+    box-shadow: 0 0 25px 3px black;
+    border-radius: 20px;
+}
+
+.login-form h1{
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-family: sans-serif;
+}
+
+
+/*Socials*/
+
+.social-menu{
+    width: 285px;
+    height: 65px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0;
+}
+
+.social-menu ul {
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+}
+
+.social-menu ul li{
+    list-style: none;
+    margin: 0 15px;
+}
+
+.social-menu ul li .fab{
+    font-size: 20px;
+    line-height: 60px;
+    transition: .3px;
+    color: #000;
+}
+
+.social-menu ul li .fab:hover{
+    color: #fff;
+}
+
+.social-menu ul li a{
+    position: relative;
+    display: block;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #fff;
+    text-align: center;
+    transition: .6s;
+    box-shadow: 0 5px 4px rgba(0,0,0,.5);
+}
+
+.social-menu ul li a:hover{
+    transform: translate(0, -10%);
+}
+
+.social-menu ul li:nth-child(1) a:hover{
+    background-color: rgba(0,0,0,0.829);
+}
+
+.social-menu ul li:nth-child(2) a:hover{
+    background-color: #e4405f;
+}
+
+.social-menu ul li:nth-child(3) a:hover{
+    background-color: #0077b5;
+}
+
+
+.input-group{
+    top: 180px;
+    position: absolute;
+    width: 280px;
+    transition: .5s;
+}
+
+.input-group p{
+    margin: 10px;
+    text-align: center;
+}
+
+.link{
+    text-align: center;
+}
+
+.link a{
+    color: #002E6E;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+.input-file{
+    font-size: 15px;
+    width: 100%;
+    padding: 10px 0;
+    margin: 5px 0;
+    border-left: 0;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 1px solid #999;
+    outline: none;
+    background: transparent;
+}
+
+.submit-btn{
+    margin: 30px;
+    width: 85%;
+    padding: 10px 30px;
+    cursor: pointer;
+    display: block;
+    background-color: #002E6E;
+    color: white;
+    border: 0;
+    outline: none;
+    border-radius: 30px;
+    font-size: 15px;
+}
+
+.submit-btn a{
+    text-decoration: none;
+    color: white;
+    font-weight: 800;
+}
+.submit-btn:hover{
+    box-shadow: 0px 0px 4px 2px black;
+    color: aliceblue;
+}
+
+#login{
+    left: 50px;
+}

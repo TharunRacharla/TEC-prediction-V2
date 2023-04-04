@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/sign-up-page.css') }}">
+
+    <script src="https://kit.fontawesome.com/cf8e2afea6.js" crossorigin="anonymous"></script>
+
+    <title>Register Here</title>
+</head>
+<body>
+    <div class="login-page">
+
+        <div class="login-form">
+
+            <h1>Register Here</h1>
+            <!--Register-Form-->
+            <form id="login" class="input-group">
+
+                <input type="text" class="input-file" placeholder="Email ID" required>
+
+                <input type="password" class="input-file" placeholder="Enter Password" required>
+
+                <input type="password" class="input-file" placeholder="Confirm Password" required>
+
+                <button type="submit" class="submit-btn"><a href="\signin">Register</a></button>
+
+                <p>Already have an account !</p>
+
+                <div class="link">
+                    <a href="\signin">Login here</a>
+                </div>
+
+            </form>
+
+            
+
+        </div>
+    
+    </div>
+
+</body>
+</html>
