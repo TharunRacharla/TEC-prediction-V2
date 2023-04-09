@@ -21,11 +21,11 @@
             <h1>Log In Here</h1>
 
             <!--Login-Form-->
-            <form id="login" class="input-group">
+            <form id="login" action="{{ url_for('login') }}" method="post" class="input-group">
 
-                <input type="text" class="input-file" placeholder="User ID" required>
+                <input type="text" name="email" class="input-file" placeholder="User ID" required>
 
-                <input type="password" class="input-file" placeholder="Enter Password" required>
+                <input type="password" name="password" class="input-file" placeholder="Enter Password" required>
 
                 <button type="submit" class="submit-btn" id="login"><a href="/index">Log in</a></button>
 

@@ -18,13 +18,15 @@
 
             <h1>Register Here</h1>
             <!--Register-Form-->
-            <form id="login" class="input-group">
+            <form id="login" form action="{{ url_for('register') }}" method="post" class="input-group">
 
-                <input type="text" class="input-file" placeholder="Email ID" required>
+                <input type="text" name="username" class="input-file" placeholder="Email ID" required>
 
-                <input type="password" class="input-file" placeholder="Enter Password" required>
+                <input type="text" name="email" class="input-file" placeholder="Email ID" required>
 
-                <input type="password" class="input-file" placeholder="Confirm Password" required>
+                <input type="password" name="password" class="input-file" placeholder="Enter Password" required>
+
+                <input type="password" name="password" class="input-file" placeholder="Confirm Password" required>
 
                 <button type="submit" class="submit-btn"><a href="\signin">Register</a></button>
 
