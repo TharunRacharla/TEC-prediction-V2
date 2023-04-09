@@ -44,11 +44,7 @@ class User(db.Model):
 def create_tables():
     db.create_all()
 
-@app.route('/')
-def home():
-    return render_template('register.html')
-
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         # Get the form data
