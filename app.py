@@ -60,7 +60,7 @@ def register():
         db.session.commit()
 
         # Redirect to the login page
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
     else:
         return render_template('register.html')
 
@@ -76,7 +76,7 @@ def login():
 
         if user and user.password == password:
             # Redirect to the home page or a protected resource
-            return redirect(url_for('home'))
+            return redirect(url_for('index'))
         else:
             # Show an error message
             return render_template('signin.html', error='Invalid email or password')

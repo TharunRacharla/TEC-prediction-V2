@@ -20,20 +20,20 @@
             <!--Register-Form-->
             <form id="login" form action="{{ url_for('register') }}" method="post" class="input-group">
 
-                <input type="text" name="username" class="input-file" placeholder="Email ID" required>
+                <input type="text" name="username" class="input-file" placeholder="Enter username" required>
 
                 <input type="text" name="email" class="input-file" placeholder="Email ID" required>
 
                 <input type="password" name="password" class="input-file" placeholder="Enter Password" required>
 
-                <input type="password" name="password" class="input-file" placeholder="Confirm Password" required>
+                <!--input type="password" name="password" class="input-file" placeholder="Confirm Password" required-->
 
-                <button type="submit" class="submit-btn"><a href="\signin">Register</a></button>
+                <button type="submit" class="submit-btn"><a href="{{ url_for('login') }}">Register</a></button>
 
                 <p>Already have an account !</p>
 
                 <div class="link">
-                    <a href="\signin">Login here</a>
+                    <a href="{{ url_for('login') }}">Login here</a>
                 </div>
 
             </form>
