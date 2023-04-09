@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, jsonify
+from flask import Flask, render_template, request, url_for, jsonify, redirect
 import pandas as pd
 from matplotlib import pyplot as plt
 import base64, shutil, os, pickle
@@ -30,6 +30,16 @@ class TECParams(db.Model):
     kp_index = db.Column(db.Float, nullable=False)
     tec_output = db.Column(db.Float, nullable=True)
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+
+    def __repr__(self):
+        return f"User('{self.username}', '{self.email}')"
+
+
 @app.before_first_request
 def create_tables():
     db.create_all()
@@ -38,9 +48,44 @@ def create_tables():
 def home():
     return render_template('register.html')
 
-@app.route('/signin')
-def signin():
-    return render_template('signin.html')
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        # Get the form data
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+
+        # Create a new user object
+        new_user = User(username=username, email=email, password=password)
+
+        # Add the user to the database
+        db.session.add(new_user)
+        db.session.commit()
+
+        # Redirect to the login page
+        return redirect(url_for('signin'))
+    else:
+        return render_template('register.html')
+
+@app.route('/signin', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # Get the form data
+        email = request.form['email']
+        password = request.form['password']
+
+        # Check if the user exists in the database
+        user = User.query.filter_by(email=email).first()
+
+        if user and user.password == password:
+            # Redirect to the home page or a protected resource
+            return redirect(url_for('home'))
+        else:
+            # Show an error message
+            return render_template('signin.html', error='Invalid email or password')
+    else:
+        return render_template('signin.html')
 
 @app.route('/index')
 def index():
