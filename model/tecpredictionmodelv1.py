@@ -13,6 +13,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 import numpy as np
 from sklearn.metrics import mean_absolute_error
+import os
 
 TECdata = pd.read_csv('model\TEC data for bengaluru 20151a.csv')
 tecdata = pd.DataFrame(TECdata)
@@ -64,6 +65,10 @@ import pickle
 with open("TEC_model.pkl", "wb") as file:
     pickle.dump(final_model, file)
 
+file_path = 'TEC_model.pkl'
+abs_file_path = os.path.abspath(file_path)
+print(abs_file_path)
+
 # Opening saved model
-with open("E:\BE Information Technology\\4th year - college\\7th sem - Major project\FinalYearProject\TEC_model.pkl", "rb") as file:
+with open(abs_file_path, "rb") as file:
     current_model = pickle.load(file)
