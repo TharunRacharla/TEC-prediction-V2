@@ -9,9 +9,9 @@
     <ul>
         <li style="font-size:20px; font-weight:bold;">Select Date and Time</li>
     </ul>
-    <form action="{{ url_for('predict') }}" method="post">
+    <form action="{{ url_for('predict') }}" action="{{ url_for('run_model') }}" method="post">
         <span><span style="font-weight:bold; margin:20px;">Enter year:<input style="width:80px;" type="number" name="year" 
-                    placeholder="year" /></span>
+            placeholder="year" min="1900" max="2099" required/></span>
 
             <p> 
                 <span style="font-weight:bold; padding-left: 10px;">Select a location</span><select name="month" size="1" style="margin-left: 30px;">
@@ -29,27 +29,68 @@
                     <option  selected="" value="12">December
                     </option></select>
                <span style="font-weight:bold; padding-left:10px;">Day(1-31):</span><input
-                    style="width:80px;" type="number" name="day" placeholder="day" /></p>
+                    style="width:80px;" type="number" name="day" placeholder="day"  min="1" max="31" required/></p>
             <p> <span style="font-weight:bold; padding-left: 20px;">Time:</span><input style="width:80px;" type="text" name="hour_of_day"
-                    placeholder="time" /></p>
+                    placeholder="time"  min="0" max="24" required/></p>
             <ul>
                 <li style="font-size:20px; font-weight:bold;">Select Coordinates</li>
             <p></p><span style="font-weight:bold; padding-left: 10px;">Select a location</span><select name="location" size="1" style="margin-left: 30px;">
                 <option  selected="" value="1">Bengaluru
                 </option></select></ul>
             <p> <span style="font-weight:bold; padding-left: 20px;">Enter number of sunspots, Rz:</span><input style="width:80px;" type="text" name="rz_12"
-                placeholder="time" /></p>
+                placeholder="Enter number"  min="0" max="400" required/></p>
             <p> <span style="font-weight:bold; padding-left: 20px;">Enter interplanetary magnetic field value, IG (12 hr mean):</span><input style="width:80px;" type="text" name="ig_12"
-                placeholder="time" /></p>
+                placeholder="Enter number"  min="0" max="400" required/></p>
             <p> <span style="font-weight:bold; padding-left: 20px;">Enter ap_index 3-h mean value:</span><input style="width:80px;" type="text" name="ap_index"
-                placeholder="time" /></p>
+                placeholder="Enter number"  min="0" max="100" required/></p>
             <p> <span style="font-weight:bold; padding-left: 20px;">Enter kp_index 3-h mean value:</span><input style="width:80px;" type="text" name="kp_index"
-                placeholder="time" /></p>
+                placeholder="Enter number"  min="0" max="100" required/></p>
                 <button style="width:100px; margin-left:20px;height: 40px; font-size:18px;"><a href="/predict"></a>predict</button>
-                <button style="width:100px; margin-left:20px;height: 40px; font-size:18px;"><a href="/plot"></a>plot</button>
-    </form>
-    <br/><br/>
-    <span style="margin-left: 15px;"> {{ prediction_text }}</span>
+                <span style="margin-left: 15px;"> {{ prediction_text }}</span>                
+                <br/><br/>
+                <h1>Model Output</h1>
+                <p id="output"></p>
+                  <label for="start_day">Start Day:</label>
+                  <input type="number" id="start_day" name="start_day" value="1">
+                  <button type="button" onclick="runModel()">Run Model</button>
+                <script>
+                  function runModel() {
+                    const startDay = document.getElementById("start_day").value;
+                    const output = document.getElementById("output");
+                    output.innerHTML = "Model running...";
+                    fetch(`/run_model?start_day=${startDay}`)
+                      .then(response => response.text())
+                      .then(result => {
+                        output.innerHTML = result;
+                      });
+                  }
+                </script>
+                <div id="plot"></div>
+                <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+                <script>
+                    fetch('/data')
+                        .then(response => response.json())
+                        .then(data => {
+                            var plot_data = {
+                                x: Array.from({length: data.length}, (_, i) => i+1),
+                                y: data,
+                                type: 'scatter'
+                            };
+                            var layout = {
+                                title: 'Real-time Output Data',
+                                xaxis: {title: 'Day of year'},
+                                yaxis: {title: 'Output Value'}
+                            };
+                            Plotly.newPlot('plot', [plot_data], layout);
+                        })
+                        .catch(error => console.error(error));
+                </script>
+          
+            </form>
+    
+
+
+
     
 </body>
 
