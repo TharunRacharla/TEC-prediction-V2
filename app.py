@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, url_for, jsonify, redirect
 import pandas as pd
 from matplotlib import pyplot as plt
-import base64, shutil, os, pickle
+import base64, shutil, os, pickle, time
 from io import BytesIO
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
+from sqlalchemy.exc import IntegrityError
 import  numpy as np
 from datetime import datetime
 month_to_day = {"1":0, "2":31, "3":59, "4":90, "5":120, "6":151, "7":181, "8":212, "9":243, "10":273, "11":304, "12":334}
@@ -39,6 +40,10 @@ class User(db.Model):
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
 
+class Output(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    value = db.Column(db.Float)
+
 
 @app.before_first_request
 def create_tables():
@@ -51,18 +56,17 @@ def register():
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
-
-        # Create a new user object
-        new_user = User(username=username, email=email, password=password)
-
-        # Add the user to the database
-        db.session.add(new_user)
-        db.session.commit()
-
-        # Redirect to the login page
-        return redirect(url_for('login'))
+        try:
+            user = User(username=username, email=email, password=password)
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('login'))
+        except IntegrityError:
+            return jsonify({'success': False, 'message': 'Username or email already exists.'})
     else:
         return render_template('register.html')
+
+
 
 @app.route('/signin', methods=['GET', 'POST'])
 def login():
@@ -83,6 +87,8 @@ def login():
     else:
         return render_template('signin.html')
 
+
+
 @app.route('/index')
 def index():
     return render_template('index.html')
@@ -100,7 +106,7 @@ def predict():
         with open("TEC_model.pkl", "rb") as file:
             current_model = pickle.load(file)
         inputs = np.array([[year, day_of_year, hour_of_day, rz_12, ig_12, ap_index, kp_index]])
-        inputs.reshape(1, -1)
+        inputs = inputs.reshape(1, -1)
         prediction = current_model.predict(inputs) # Passing in variables for prediction
         tec_output = prediction
         tec_input = TECParams(year=year,
@@ -116,30 +122,70 @@ def predict():
         db.session.commit()
     return render_template('index.html', prediction_text='the value of TEC content is {}'.format(tec_output))
 
-@app.route('/plot')
-def plot():
+
+@app.route('/data')
+def data():
+    outputs = Output.query.all()
+    return jsonify([output.value for output in outputs])
+
+@app.route("/run_model", methods=['GET', 'POST'])
+# @app.before_first_request
+def run_model():
+    # Load the trained model
+    model = load_model()
+    start_day = int(request.args.get("start_day"))
+    for day in range(start_day, 366):
+        output = get_output(model, day)
+        db.session.add(Output(value=output))
+        db.session.commit()
+        time.sleep(3)
+    return redirect(url_for('data'))
+
+def load_model():
     with open("TEC_model.pkl", "rb") as file:
         current_model = pickle.load(file)
+    return current_model
 
-    def predictor():
-        prediction = current_model.predict() # Passing in variables for prediction
-        return prediction
-    pred_inputs = []
-    prediction_outputs = []
-    for i in pred_inputs:
-        prediction_outputs.append(predictor(i))
-    print(prediction_outputs)
-    fig, ax = plt.subplots()
-    prediction_outputs.plot.line()
-    tmpfile = BytesIO()
-    fig.savefig(tmpfile, format='png')
-    encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
-    prediction_output =  '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Document</title></head><body>'+ '<img src=\'data:image/png;base64,{}\'>'.format(encoded) + '</body></html>'
+# Generate an output value based on the current state of the model
+def get_output(model, day):
+    if request.method == 'POST':
+        year = request.form['year']
+        # day_of_year = month_to_day[(request.form['month'])] + int(request.form['day'])
+        hour_of_day = int(request.form['hour_of_day'])
+        rz_12 = request.form['rz_12']
+        ig_12 = request.form['ig_12']
+        ap_index = request.form['ap_index']
+        kp_index = request.form['kp_index']
+        day = int(day)
+        inputs = np.array([[year, day, hour_of_day, rz_12, ig_12, ap_index, kp_index]])
+        inputs = inputs.reshape(1, -1)
+        prediction = model.predict(inputs) # Passing in variables for prediction
+        tec_output = prediction[0] # Get the output value only
+        return tec_output
+# @app.route('/plot')
+# def plot():
+#     with open("TEC_model.pkl", "rb") as file:
+#         current_model = pickle.load(file)
 
-    with open('test.html','w') as f:
-        f.write(prediction_output)
-    shutil.move(r"C:\Users\Roshan\Documents\Programcodes\python\FlaskTutorial\test.html", r"C:\Users\Roshan\Documents\Programcodes\python\FlaskTutorial\templates\test.html")
-    return render_template('test.html')
+#     def predictor():
+#         prediction = current_model.predict() # Passing in variables for prediction
+#         return prediction
+#     pred_inputs = []
+#     prediction_outputs = []
+#     for i in pred_inputs:
+#         prediction_outputs.append(predictor(i))
+#     print(prediction_outputs)
+#     fig, ax = plt.subplots()
+#     prediction_outputs.plot.line()
+#     tmpfile = BytesIO()
+#     fig.savefig(tmpfile, format='png')
+#     encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
+#     prediction_output =  '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Document</title></head><body>'+ '<img src=\'data:image/png;base64,{}\'>'.format(encoded) + '</body></html>'
+
+#     with open('test.html','w') as f:
+#         f.write(prediction_output)
+#     shutil.move(r"C:\Users\Roshan\Documents\Programcodes\python\FlaskTutorial\test.html", r"C:\Users\Roshan\Documents\Programcodes\python\FlaskTutorial\templates\test.html")
+#     return render_template('test.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
